@@ -14,8 +14,7 @@ import {
     get,
     set,
     update,
-    serverTimestamp,
-    child
+    serverTimestamp
 } from 'firebase/database';
 import { auth, database } from '../firebase/config';
 

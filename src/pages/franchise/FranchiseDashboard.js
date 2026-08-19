@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFranchiseAuth } from '../../utils/FranchiseAuthContext';
 import { database } from '../../firebase/config';
-import { ref, get, query, orderByChild, equalTo, onValue } from 'firebase/database';
+import { ref, get } from 'firebase/database';
 
 const FranchiseDashboard = () => {
   const { franchise, logout, loading: authLoading, error: authError } = useFranchiseAuth();
@@ -610,7 +610,7 @@ const FranchiseDashboard = () => {
             
             <div style={styles.modalBody}>
               <div style={styles.profileGrid}>
-                <div style={styles.profileSection}>
+                <div style={styles.modalProfileSection}>
                   <h3 style={styles.profileSectionTitle}>🏛️ Center Information</h3>
                   <div style={styles.profileDetails}>
                     <ProfileDetail label="Center Name" value={franchise.profile.centerName} />
@@ -622,7 +622,7 @@ const FranchiseDashboard = () => {
                   </div>
                 </div>
 
-                <div style={styles.profileSection}>
+                <div style={styles.modalProfileSection}>
                   <h3 style={styles.profileSectionTitle}>📍 Location & Infrastructure</h3>
                   <div style={styles.profileDetails}>
                     <ProfileDetail 
@@ -638,7 +638,7 @@ const FranchiseDashboard = () => {
                   </div>
                 </div>
 
-                <div style={styles.profileSection}>
+                <div style={styles.modalProfileSection}>
                   <h3 style={styles.profileSectionTitle}>💼 Business Information</h3>
                   <div style={styles.profileDetails}>
                     <ProfileDetail 
@@ -1491,7 +1491,7 @@ const styles = {
     display: 'grid',
     gap: '30px'
   },
-  profileSection: {
+  modalProfileSection: {
     padding: '20px',
     backgroundColor: '#f8fafc',
     borderRadius: '16px',

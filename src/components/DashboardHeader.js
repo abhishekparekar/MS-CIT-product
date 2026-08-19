@@ -7,7 +7,6 @@ const DashboardHeader = ({ title, onMenuClick }) => {
   const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   // Add user state
-  const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState({
     name: 'Admin',
     email: '',
@@ -27,7 +26,6 @@ const DashboardHeader = ({ title, onMenuClick }) => {
   // Add Firebase auth listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
       if (currentUser) {
         // Extract user information
         const displayName = currentUser.displayName || currentUser.email?.split('@')[0] || 'User';

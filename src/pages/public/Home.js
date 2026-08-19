@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import home3 from '../../assets/homebg3.jpg';
-import home4 from '../../assets/homebg4.jpg';
-import home5 from '../../assets/home5.jpeg';
 import home6 from '../../assets/home6.jpeg';
-import home7 from '../../assets/homebg7.jpeg';
 import home8 from '../../assets/homebg8.jpeg';
 import home9 from '../../assets/homebg9.jpeg';
 import home10 from '../../assets/homebg10.jpeg';
@@ -15,7 +10,6 @@ const Home = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
     const [scrollY, setScrollY] = useState(0);
-    const [isVisible, setIsVisible] = useState({});
     
     const backgroundImages = [ home6, home8, home9, home10];
 
@@ -594,8 +588,6 @@ const Home = () => {
             document.head.removeChild(styleSheet);
         };
     }, [scrollY]);
-
-    const navigate = useNavigate();
 
     return (
         <div style={styles.homeContainer}>
