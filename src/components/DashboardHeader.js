@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../firebase/config'; // Add this import
-import { onAuthStateChanged, signOut } from 'firebase/auth'; // Add this import
+import authService from '../services/authService';
 
 const DashboardHeader = ({ title, onMenuClick }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  // Add user state
   const [userProfile, setUserProfile] = useState({
     name: 'Admin',
     email: '',
@@ -23,53 +21,39 @@ const DashboardHeader = ({ title, onMenuClick }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Add Firebase auth listener
+  // Load user profile from auth state / API
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        // Extract user information
-        const displayName = currentUser.displayName || currentUser.email?.split('@')[0] || 'User';
-        const email = currentUser.email || '';
-        
-        // Generate initials from display name or email
-        const initials = displayName.length >= 2 
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        const displayName = user.name || user.displayName || user.email?.split('@')[0] || 'User';
+        const email = user.email || '';
+        const initials = displayName.length >= 2
           ? displayName.substring(0, 2).toUpperCase()
-          : displayName.charAt(0).toUpperCase() + (email.charAt(0).toUpperCase() || 'U');
+          : displayName.charAt(0).toUpperCase() + 'U';
 
         setUserProfile({
           name: displayName,
           email: email,
           initials: initials
         });
-      } else {
-        // Reset to default if no user
-        setUserProfile({
-          name: 'Admin',
-          email: '',
-          initials: 'AD'
-        });
-      }
-    });
-
-    return unsubscribe;
+      } catch (e) {}
+    }
   }, []);
 
   const handleLogoutClick = () => {
     if (isMobile) {
-      // Direct logout on mobile for better UX
       handleLogout();
     } else {
-      // Show confirmation on desktop
       setShowLogoutConfirm(true);
     }
   };
 
-  // Modified logout function with Firebase signOut
   const handleLogout = async () => {
     try {
-      await signOut(auth);
-      // Redirect to login page or handle logout in parent component
-      window.location.href = '/login'; // or use your routing method
+      authService.logout();
+      window.location.href = '/login';
     } catch (error) {
       console.error('Error signing out:', error);
     }

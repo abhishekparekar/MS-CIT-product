@@ -1,7 +1,6 @@
 // src/pages/public/TrainingCenterAffiliation.js
 import React, { useState } from 'react';
-import { ref, push, set } from 'firebase/database';
-import { database } from '../../firebase/config'; // Adjust path as needed
+import franchiseService from '../../services/franchiseService';
 
 const TrainingCenterAffiliation = () => {
     const [formData, setFormData] = useState({
@@ -190,26 +189,31 @@ const TrainingCenterAffiliation = () => {
                 }
             };
 
-            setMessage('Saving application...');
+            setMessage('Saving application to MongoDB Atlas...');
 
-            // Save to Firebase Realtime Database
-            // Create reference to trainingCenterApplications node
-            const applicationsRef = ref(database, 'trainingCenterApplications');
+            const payload = {
+                directorName: formData.ownerName,
+                email: formData.email,
+                contactNumber: formData.contactNumber,
+                whatsappNumber: formData.mobileNumber,
+                qualification: formData.qualification,
+                instituteName: formData.centerName || formData.firmName,
+                centerAddress: formData.centerAddress,
+                place: formData.place,
+                district: formData.district,
+                state: formData.state || 'Maharashtra',
+                pincode: formData.trainingPinCode || formData.personalPinCode,
+                computerCount: parseInt(formData.computerSystems) || 10,
+                classroomCount: parseInt(formData.noOfClassroom) || 2,
+                labCount: parseInt(formData.noOfLab) || 1,
+                totalArea: parseInt(formData.premisesArea) || 500,
+                desiredUsername: formData.userName,
+                desiredPassword: formData.password
+            };
 
-            // Push new application (generates unique key)
-            const newApplicationRef = push(applicationsRef);
+            const res = await franchiseService.applyForAffiliation(payload);
 
-            // Set the data
-            await set(newApplicationRef, applicationData);
-
-            // Also save to a separate node for easy querying by application ID
-            const applicationByIdRef = ref(database, `applicationsByID/${applicationId}`);
-            await set(applicationByIdRef, {
-                ...applicationData,
-                databaseKey: newApplicationRef.key
-            });
-
-            setMessage('🎉 Application submitted successfully! Your application ID is: ' + applicationId);
+            setMessage('🎉 Application submitted successfully! Your application number is: ' + (res.applicationNumber || applicationId));
 
             // Reset form
             setFormData({
@@ -224,16 +228,7 @@ const TrainingCenterAffiliation = () => {
 
         } catch (error) {
             console.error('Error submitting application:', error);
-            let errorMessage = 'Error submitting application. Please try again.';
-
-            // Handle specific Firebase errors
-            if (error.code === 'PERMISSION_DENIED') {
-                errorMessage = 'Permission denied. Please check your database rules.';
-            } else if (error.code === 'NETWORK_ERROR') {
-                errorMessage = 'Network error. Please check your internet connection.';
-            }
-
-            setMessage('❌ ' + errorMessage);
+            setMessage('❌ Error submitting application: ' + (error.message || 'Please try again.'));
         }
 
         setLoading(false);

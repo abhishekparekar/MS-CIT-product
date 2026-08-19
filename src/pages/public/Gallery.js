@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { database } from '../../firebase/config'; // Add this import
-import { ref, onValue } from "firebase/database"; // Add this import
+import adminService from '../../services/adminService';
 
 const Gallery = () => {
     const [activeCategory, setActiveCategory] = useState('all');
     const [selectedItem, setSelectedItem] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isTablet, setIsTablet] = useState(window.innerWidth <= 1024 && window.innerWidth > 768);
-    const [galleryItems, setGalleryItems] = useState([]); // Add this state
-    const [loading, setLoading] = useState(true); // Add this state
+    const [galleryItems, setGalleryItems] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const handleResize = () => {
@@ -19,25 +18,22 @@ const Gallery = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Add Firebase data fetching
+    // Fetch from MongoDB backend REST API
     useEffect(() => {
-        const galleryRef = ref(database, 'gallery');
-        const unsubscribe = onValue(galleryRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const items = Object.keys(data).map(key => ({
-                    id: key,
-                    ...data[key]
-                })).sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date
-                setGalleryItems(items);
-            } else {
+        setLoading(true);
+        adminService.getGallery(activeCategory)
+            .then(res => {
+                if (res.items) {
+                    setGalleryItems(res.items);
+                }
+            })
+            .catch(() => {
                 setGalleryItems([]);
-            }
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, []);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [activeCategory]);
 
     const styles = {
         // ... (keep all existing styles)

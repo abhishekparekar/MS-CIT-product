@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { database } from '../../firebase/config';
-import { ref, push } from "firebase/database";
+import apiClient from '../../services/apiClient';
 
 const ApplyNow = () => {
   const [formData, setFormData] = useState({
