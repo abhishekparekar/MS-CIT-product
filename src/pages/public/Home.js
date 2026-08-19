@@ -10,6 +10,7 @@ const Home = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
     const [scrollY, setScrollY] = useState(0);
+    const [, setIsVisible] = useState({});
     
     const backgroundImages = [ home6, home8, home9, home10];
 
